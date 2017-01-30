@@ -3,59 +3,59 @@
 ////module FindRef3 {
 ////	module SimpleClassTest {
 ////		export class Foo {
-////			public [|foo|](): void {
+////			public [|{| "isWriteAccess": true, "isDefinition": true |}foo|](): void {
 ////			}
 ////		}
 ////		export class Bar extends Foo {
-////			public [|foo|](): void {
+////			public [|{| "isWriteAccess": true, "isDefinition": true |}foo|](): void {
 ////			}
 ////		}
 ////	}
 ////
 ////	module SimpleInterfaceTest {
 ////		export interface IFoo {
-////			[|ifoo|](): void;
+////			[|{| "isWriteAccess": true, "isDefinition": true |}ifoo|](): void;
 ////		}
 ////		export interface IBar extends IFoo {
-////			[|ifoo|](): void;
+////			[|{| "isWriteAccess": true, "isDefinition": true |}ifoo|](): void;
 ////		}
 ////	}
 ////
 ////	module SimpleClassInterfaceTest {
 ////		export interface IFoo {
-////			[|icfoo|](): void;
+////			[|{| "isWriteAccess": true, "isDefinition": true |}icfoo|](): void;
 ////		}
 ////		export class Bar implements IFoo {
-////			public [|icfoo|](): void {
+////			public [|{| "isWriteAccess": true, "isDefinition": true |}icfoo|](): void {
 ////			}
 ////		}
 ////	}
 ////
 ////	module Test {
 ////		export interface IBase {
-////			[|field|]: string;
-////			[|method|](): void;
+////			[|{| "isWriteAccess": true, "isDefinition": true |}field|]: string;
+////			[|{| "isWriteAccess": true, "isDefinition": true |}method|](): void;
 ////		}
 ////
 ////		export interface IBlah extends IBase {
-////			[|field|]: string;
+////			[|{| "isWriteAccess": true, "isDefinition": true |}field|]: string;
 ////		}
 ////
 ////		export interface IBlah2 extends IBlah {
-////			[|field|]: string;
+////			[|{| "isWriteAccess": true, "isDefinition": true |}field|]: string;
 ////		}
 ////
 ////		export interface IDerived extends IBlah2 {
-////			[|method|](): void;
+////			[|{| "isWriteAccess": true, "isDefinition": true |}method|](): void;
 ////		}
 ////
 ////		export class Bar implements IDerived {
-////			public [|field|]: string;
-////			public [|method|](): void { }
+////			public [|{| "isWriteAccess": true, "isDefinition": true |}field|]: string;
+////			public [|{| "isWriteAccess": true, "isDefinition": true |}method|](): void { }
 ////		}
 ////
 ////		export class BarBlah extends Bar {
-////			public [|field|]: string;
+////			public [|{| "isWriteAccess": true, "isDefinition": true |}field|]: string;
 ////		}
 ////	}
 ////
@@ -75,4 +75,21 @@
 ////	}
 ////}
 
-verify.rangesWithSameTextReferenceEachOther();
+const ranges = test.rangesByText();
+
+const fooRanges = ranges.get("foo");
+const [foo0, foo1, foo2] = fooRanges;
+verify.referenceGroups(foo0, [{ definition: "(method) SimpleClassTest.Foo.foo(): void", ranges: fooRanges }]);
+verify.referenceGroups([foo1, foo2], [
+    { definition: "(method) SimpleClassTest.Foo.foo(): void", ranges: [foo0] },
+    { definition: "(method) SimpleClassTest.Bar.foo(): void", ranges: [foo1, foo2] }
+]);
+TODO:REST
+
+const ifooRanges = ranges.get("ifoo");
+const [ifoo0, ifoo1, ifoo2] = ifooRanges;
+verify.referenceGroups(ifoo0, [{ definition: "(method) SimpleClassTest.Foo.foo(): void", ranges: ifooRanges }]);
+
+
+
+//erify.singleReferenceGroup("(method) SimpleClassTest.Foo.foo(): void", ranges.get("foo"));
